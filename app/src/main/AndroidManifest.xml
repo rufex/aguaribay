@@ -25,6 +25,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.confirmation.ConfirmationActivity"
+            android:excludeFromRecents="true"
+            android:exported="false" />
+
         <service
             android:name=".service.AppWatcherService"
             android:exported="true"
