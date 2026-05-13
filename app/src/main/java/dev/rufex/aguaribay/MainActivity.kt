@@ -22,6 +22,7 @@ import dev.rufex.aguaribay.data.PermissionChecker
 import dev.rufex.aguaribay.data.SystemPermissionChecker
 import dev.rufex.aguaribay.ui.appselector.AppSelectorScreen
 import dev.rufex.aguaribay.ui.onboarding.PermissionGateScreen
+import dev.rufex.aguaribay.ui.settings.SettingsScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -53,7 +54,12 @@ class MainActivity : ComponentActivity() {
                             description = "Aguaribay needs to detect when you open a tracked app. Tap below, find 'Aguaribay' under Installed Apps and enable it.",
                             onOpenSettings = { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) },
                         )
-                        Screen.Home -> AppSelectorScreen()
+                        Screen.Home -> AppSelectorScreen(
+                            onNavigateToSettings = { currentScreen = Screen.Settings },
+                        )
+                        Screen.Settings -> SettingsScreen(
+                            onBack = { currentScreen = Screen.Home },
+                        )
                     }
                 }
             }
@@ -66,16 +72,24 @@ class MainActivity : ComponentActivity() {
         val overlay = permissionChecker.hasOverlayPermission()
         val accessibility = permissionChecker.hasAccessibilityEnabled()
         Log.d("Aguaribay", "permissions — usage=$usage overlay=$overlay accessibility=$accessibility")
-        currentScreen = when {
-            !usage -> Screen.UsageAccess
-            !overlay -> Screen.Overlay
-            !accessibility -> Screen.Accessibility
-            else -> Screen.Home
-        }
+        currentScreen = nextScreen(usage, overlay, accessibility, currentScreen)
         Log.d("Aguaribay", "currentScreen=$currentScreen")
     }
 }
 
-private enum class Screen {
-    UsageAccess, Overlay, Accessibility, Home
+internal enum class Screen {
+    UsageAccess, Overlay, Accessibility, Home, Settings
+}
+
+internal fun nextScreen(
+    hasUsage: Boolean,
+    hasOverlay: Boolean,
+    hasAccessibility: Boolean,
+    current: Screen,
+): Screen = when {
+    !hasUsage -> Screen.UsageAccess
+    !hasOverlay -> Screen.Overlay
+    !hasAccessibility -> Screen.Accessibility
+    current == Screen.Settings -> Screen.Settings
+    else -> Screen.Home
 }

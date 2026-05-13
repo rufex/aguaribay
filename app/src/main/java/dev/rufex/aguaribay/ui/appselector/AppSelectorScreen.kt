@@ -3,6 +3,7 @@ package dev.rufex.aguaribay.ui.appselector
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -28,41 +30,59 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun AppSelectorScreen(viewModel: AppSelectorViewModel = viewModel()) {
+fun AppSelectorScreen(
+    onNavigateToSettings: () -> Unit,
+    viewModel: AppSelectorViewModel = viewModel(),
+) {
     val state by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) { viewModel.refresh() }
 
-    if (state.isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        return
-    }
-
-    if (state.apps.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(32.dp), contentAlignment = Alignment.Center) {
-            Text(
-                text = "No user-installed apps found.\nInstall an app to start tracking it.",
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        }
-        return
-    }
-
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .safeDrawingPadding(),
     ) {
-        items(items = state.apps, key = { it.packageName }) { app ->
-            AppRow(
-                app = app,
-                checked = app.packageName in state.trackedApps,
-                onCheckedChange = { viewModel.toggleTracked(app.packageName) },
-            )
-            HorizontalDivider()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text("Tracked Apps", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 8.dp))
+            TextButton(onClick = onNavigateToSettings) { Text("Settings") }
+        }
+
+        HorizontalDivider()
+
+        if (state.isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+            return@Column
+        }
+
+        if (state.apps.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
+                Text(
+                    text = "No user-installed apps found.\nInstall an app to start tracking it.",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+            return@Column
+        }
+
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(items = state.apps, key = { it.packageName }) { app ->
+                AppRow(
+                    app = app,
+                    checked = app.packageName in state.trackedApps,
+                    onCheckedChange = { viewModel.toggleTracked(app.packageName) },
+                )
+                HorizontalDivider()
+            }
         }
     }
 }
