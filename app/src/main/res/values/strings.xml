@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Aguaribay</string>
+    <string name="accessibility_service_description">Detects when you open a tracked app so Aguaribay can show a confirmation screen.</string>
 </resources>
