@@ -24,12 +24,23 @@ class ConfirmationActivity : ComponentActivity() {
             },
         )
 
+        val isRecheck = intent.getBooleanExtra(EXTRA_IS_RECHECK, false)
+
         enableEdgeToEdge()
         setContent {
             MaterialTheme(colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()) {
                 ConfirmationScreen(
                     packageName = packageName,
-                    onConfirm = { openApp(packageName) },
+                    isRecheck = isRecheck,
+                    onConfirm = { viewModel ->
+                        if (isRecheck) {
+                            viewModel.rescheduleRecheck(packageName)
+                            finish()
+                        } else {
+                            viewModel.confirmOpen(packageName)
+                            openApp(packageName)
+                        }
+                    },
                     onDecline = { goHome() },
                 )
             }
@@ -54,5 +65,6 @@ class ConfirmationActivity : ComponentActivity() {
 
     companion object {
         const val EXTRA_PACKAGE = "extra_package"
+        const val EXTRA_IS_RECHECK = "extra_is_recheck"
     }
 }

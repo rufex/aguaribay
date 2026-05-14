@@ -32,7 +32,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun ConfirmationScreen(
     packageName: String,
-    onConfirm: () -> Unit,
+    isRecheck: Boolean = false,
+    onConfirm: (ConfirmationViewModel) -> Unit,
     onDecline: () -> Unit,
     viewModel: ConfirmationViewModel = viewModel(),
 ) {
@@ -65,7 +66,7 @@ fun ConfirmationScreen(
                     )
                 }
                 Text(
-                    text = state.appName,
+                    text = if (isRecheck) "Still in ${state.appName}?" else state.appName,
                     style = MaterialTheme.typography.headlineSmall,
                     textAlign = TextAlign.Center,
                 )
@@ -89,11 +90,15 @@ fun ConfirmationScreen(
                         Text("No, go back")
                     }
                     Button(
-                        onClick = { viewModel.confirmOpen(packageName); onConfirm() },
+                        onClick = { onConfirm(viewModel) },
                         enabled = state.canConfirm,
                         modifier = Modifier.weight(1f),
                     ) {
-                        val label = if (state.secondsLeft > 0) "Open (${state.secondsLeft})" else "Yes, open it"
+                        val label = when {
+                            state.secondsLeft > 0 -> if (isRecheck) "Keep going (${state.secondsLeft})" else "Open (${state.secondsLeft})"
+                            isRecheck -> "Keep going"
+                            else -> "Yes, open it"
+                        }
                         Text(label)
                     }
                 }

@@ -10,6 +10,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dev.rufex.aguaribay.data.AttemptStore
 import dev.rufex.aguaribay.data.SettingsStore
+import dev.rufex.aguaribay.service.AppWatcherService
 import dev.rufex.aguaribay.service.SessionGuard
 import dev.rufex.aguaribay.usage.UsageStatsHelper
 import kotlinx.coroutines.Dispatchers
@@ -84,6 +85,16 @@ class ConfirmationViewModel(application: Application) : AndroidViewModel(applica
     fun confirmOpen(packageName: String) {
         SessionGuard.startSession(packageName)
         attemptStore.incrementOpened(packageName)
+        scheduleRecheck(packageName)
+    }
+
+    fun rescheduleRecheck(packageName: String) {
+        scheduleRecheck(packageName)
+    }
+
+    private fun scheduleRecheck(packageName: String) {
+        val delayMs = settingsStore.getSessionRecheckMinutes() * 60_000L
+        AppWatcherService.scheduleRecheck(packageName, delayMs)
     }
 }
 
