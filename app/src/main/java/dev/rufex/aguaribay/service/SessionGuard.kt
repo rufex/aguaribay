@@ -12,4 +12,8 @@ object SessionGuard {
     }
 
     fun isSessionActive(packageName: String): Boolean = packageName in activeSessions
+
+    fun clearAll() {
+        activeSessions.clear()
+    }
 }

@@ -9,8 +9,7 @@ class SessionGuardTest {
 
     @Before
     fun setUp() {
-        SessionGuard.endSession("com.app.one")
-        SessionGuard.endSession("com.app.two")
+        SessionGuard.clearAll()
     }
 
     @Test
