@@ -21,6 +21,7 @@ fun PermissionGateScreen(
     title: String,
     description: String,
     onOpenSettings: () -> Unit,
+    hint: String? = null,
 ) {
     Column(
         modifier = Modifier
@@ -44,6 +45,15 @@ fun PermissionGateScreen(
         Spacer(modifier = Modifier.height(32.dp))
         Button(onClick = onOpenSettings) {
             Text("Open Settings")
+        }
+        if (hint != null) {
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = hint,
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }

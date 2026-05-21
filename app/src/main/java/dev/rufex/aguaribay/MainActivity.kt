@@ -40,7 +40,8 @@ class MainActivity : ComponentActivity() {
                         Screen.UsageAccess -> PermissionGateScreen(
                             title = "Usage Access Required",
                             description = "Aguaribay needs to see how much time you spend in apps. Tap below and enable 'Usage access' for Aguaribay.",
-                            onOpenSettings = { startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)) },
+                            onOpenSettings = { startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS, Uri.parse("package:$packageName"))) },
+                            hint = "Can't enable it? Go to Settings → Apps → Aguaribay → ⋮ → Allow restricted settings first.",
                         )
                         Screen.Overlay -> PermissionGateScreen(
                             title = "Overlay Permission Required",
