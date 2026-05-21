@@ -22,10 +22,18 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    signingConfigs {
+        create("release") {
+            storeFile = file("../aguaribay.jks")
+            storePassword = System.getenv("KEYSTORE_PASS")
+            keyAlias = "aguaribay"
+            keyPassword = System.getenv("KEY_PASS")
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
